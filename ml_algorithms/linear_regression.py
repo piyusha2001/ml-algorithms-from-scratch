@@ -87,8 +87,10 @@ class UnivariateLinearRegression:
         print(f"Learned bias (intercept): {self.bias:.4f}")
 
 class MultipleLinearRegression:
-    def __init__(self):
-        self.weights = None  
+    def __init__(self, lr=0.001, n_iters=1000):
+        self.weights = None
+        self.lr = lr
+        self.n_iters = n_iters 
 
     def predict(self, X):
         X = np.array(X)
@@ -172,3 +174,53 @@ class MultipleLinearRegression:
         input_scaled = np.c_[np.ones(input_scaled.shape[0]), input_scaled]
         prediction = model.predict(input_scaled)
         return prediction[0]
+
+class RidgeRegression(MultipleLinearRegression):
+    def __init__(self, lr=0.001, n_iters=2000, lambda_=0.1):
+        super().__init__(lr=lr, n_iters=n_iters)
+        self.lambda_ = lambda_
+
+    def cost(self, X, y):
+        y_pred = self.predict(X)
+        error = y_pred - y
+        # Exclude the bias term from regularization
+        regularization = self.lambda_ * np.sum(self.weights[1:] ** 2)
+        return np.mean(error ** 2) + regularization
+
+    def fit(self, X, y):
+        X = np.array(X)
+        y = np.array(y).flatten()
+        n_samples, n_features = X.shape
+
+        self.weights = np.zeros(n_features)
+        loss_values = []
+        prev_loss = float('inf')
+
+        for epoch in range(self.n_iters):
+            y_pred = self.predict(X)
+            error = y_pred - y
+
+            # Gradient with L2 regularization, exclude bias term
+            gradients = (2 / n_samples) * np.dot(X.T, error)
+            gradients[1:] += (2 * self.lambda_ * self.weights[1:] / n_samples)  # Regularize only weights, not bias
+
+            self.weights -= self.lr * gradients
+
+            loss = self.cost(X, y)
+            loss_values.append(loss)
+
+            if epoch % 100 == 0:
+                print(f"Epoch {epoch}: Ridge Loss = {loss:.4f}")
+
+            if abs(prev_loss - loss) < 1e-6:
+                print(f"Early stopping at epoch {epoch}, Loss = {loss:.4f}")
+                break
+
+            prev_loss = loss
+
+        plt.plot(loss_values)
+        plt.title("Ridge Loss over Epochs")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.grid(True)
+        plt.show()
