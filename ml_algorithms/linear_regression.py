@@ -224,3 +224,54 @@ class RidgeRegression(MultipleLinearRegression):
         plt.ylabel("Loss")
         plt.grid(True)
         plt.show()
+
+class LassoRegression(MultipleLinearRegression):
+    def __init__(self, lr=0.001, n_iters=1000, lambda_=1):
+        super().__init__(lr=lr, n_iters=n_iters)
+        self.lambda_ = lambda_
+
+    def cost(self, X, y):
+        y_pred = self.predict(X)
+        error = y_pred - y
+        # L1 regularization term (exclude bias)
+        regularization = self.lambda_ * np.sum(np.abs(self.weights[1:]))
+        return np.mean(error ** 2) + regularization
+
+    def fit(self, X, y):
+        X = np.array(X)
+        y = np.array(y).flatten()
+        n_samples, n_features = X.shape
+
+        self.weights = np.zeros(n_features)
+        loss_values = []
+        prev_loss = float('inf')
+
+        for epoch in range(self.n_iters):
+            y_pred = self.predict(X)
+            error = y_pred - y
+
+            gradients = (2 / n_samples) * np.dot(X.T, error)
+
+            # Apply L1 regularization (subgradient method)
+            gradients[1:] += (self.lambda_ * np.sign(self.weights[1:])) / n_samples
+
+            self.weights -= self.lr * gradients
+
+            loss = self.cost(X, y)
+            loss_values.append(loss)
+
+            if epoch % 100 == 0:
+                print(f"Epoch {epoch}: Lasso Loss = {loss:.4f}")
+
+            if abs(prev_loss - loss) < 1e-6:
+                print(f"Early stopping at epoch {epoch}, Loss = {loss:.4f}")
+                break
+
+            prev_loss = loss
+
+        plt.plot(loss_values)
+        plt.title("Lasso Loss over Epochs")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.grid(True)
+        plt.show()
