@@ -181,10 +181,14 @@ class RidgeRegression(MultipleLinearRegression):
         self.lambda_ = lambda_
 
     def cost(self, X, y):
+        y = y.flatten()
         y_pred = self.predict(X)
         error = y_pred - y
-        # Exclude the bias term from regularization
-        regularization = self.lambda_ * np.sum(self.weights[1:] ** 2)
+        n_samples = X.shape[0]
+
+        # ✅ Regularization term with correct scaling
+        regularization = self.lambda_ * np.sum(self.weights[1:] ** 2) / n_samples
+
         return np.mean(error ** 2) + regularization
 
     def fit(self, X, y):
@@ -200,9 +204,9 @@ class RidgeRegression(MultipleLinearRegression):
             y_pred = self.predict(X)
             error = y_pred - y
 
-            # Gradient with L2 regularization, exclude bias term
+            # ✅ Gradient with scaled L2 regularization (excluding bias)
             gradients = (2 / n_samples) * np.dot(X.T, error)
-            gradients[1:] += (2 * self.lambda_ * self.weights[1:] / n_samples)  # Regularize only weights, not bias
+            gradients[1:] += (2 * self.lambda_ * self.weights[1:] / n_samples)
 
             self.weights -= self.lr * gradients
 
@@ -218,6 +222,7 @@ class RidgeRegression(MultipleLinearRegression):
 
             prev_loss = loss
 
+        # Loss curve
         plt.plot(loss_values)
         plt.title("Ridge Loss over Epochs")
         plt.xlabel("Epoch")
@@ -233,8 +238,11 @@ class LassoRegression(MultipleLinearRegression):
     def cost(self, X, y):
         y_pred = self.predict(X)
         error = y_pred - y
+        n_samples = X.shape[0]
+
         # L1 regularization term (exclude bias)
-        regularization = self.lambda_ * np.sum(np.abs(self.weights[1:]))
+        regularization = self.lambda_ * np.sum(np.abs(self.weights[1:])) / n_samples
+        
         return np.mean(error ** 2) + regularization
 
     def fit(self, X, y):
