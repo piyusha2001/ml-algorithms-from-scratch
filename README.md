@@ -5,13 +5,15 @@ This repository contains implementations of core Machine Learning algorithms wri
 ## 📌 What’s Inside
 
 ### 📈 Regression  
-- Univariate Linear Regression  
+- Univariate Linear Regression
+- Multiple variable Linear Regression
 - Ridge & Lasso Regression  
 
 ### 🔍 Classification  
 - Logistic Regression  
 - Support Vector Machine (SVM)  
-- Naive Bayes (Multinomial for text classification)  
+- Naive Bayes (Multinomial for text classification)
+- K-Nearest Neighbours
 
 ### ⚙️ Preprocessing Utilities  
 - Feature Scaling  
