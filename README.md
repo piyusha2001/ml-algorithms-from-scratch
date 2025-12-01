@@ -1,6 +1,6 @@
 # ML Algorithms from Scratch 🧠✨
 
-This repository contains implementations of core Machine Learning algorithms written from scratch using only Python, NumPy, and pandas. The goal is to build a deeper understanding of how these algorithms work under the hood—without relying on external ML libraries like scikit-learn.
+This repository contains implementations of core Machine Learning algorithms written from scratch using only Python, NumPy, and pandas. The goal is to build a deeper understanding of how these algorithms work under the hood without relying on external ML libraries like scikit-learn.
 
 ## 📌 What’s Inside
 
