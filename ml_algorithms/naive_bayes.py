@@ -3,7 +3,6 @@ import math
 
 class NaiveBayes:
     def __init__(self):
-        # Initialize the counters and vocabulary
         self.class_word_counts = {
             'ham': Counter(),
             'spam': Counter()
@@ -20,7 +19,6 @@ class NaiveBayes:
             self.class_counts[label] += 1
             self.class_word_counts[label].update(tokens)
 
-        # Create vocabulary (all unique words across both classes)
         self.vocabulary = set(self.class_word_counts['ham'].keys()) | set(self.class_word_counts['spam'].keys())
 
     def get_class_counts(self):
@@ -38,7 +36,6 @@ class NaiveBayes:
         total_docs = sum(self.class_counts.values())
         vocab_size = len(self.vocabulary)
 
-        # Total number of words in each class
         total_words = {
             label: sum(self.class_word_counts[label].values())
             for label in self.class_counts
@@ -48,11 +45,9 @@ class NaiveBayes:
             class_scores = {}
 
             for label in self.class_counts:
-                # Start with log prior
                 log_prob = math.log(self.class_counts[label] / total_docs)
 
                 for word in tokens:
-                    # Count of word in this class
                     word_count = self.class_word_counts[label][word]
                     
                     # Apply Laplace smoothing
